@@ -8,6 +8,7 @@ import random
 import math
 import copy
 import sys
+import os
 
 #copyright:hku eee In-memory calculation group
 #author: chenxi
@@ -22,6 +23,7 @@ reciprocal_di = 100 #The division of floating-point numbers will bring errors
 delta_t = 0.01 #all time steps are ms
 reciprocal_dt = 100
 g_initial = 50 #assume the range of variation is [0-100]
+learning_rate = 0.1
 
 class data_set:
     def __init__(self,type=0,setnum=3):
@@ -107,6 +109,10 @@ class data_set:
 def write_system_log(dataset,teacherset,testset,answer):
     time_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     filename = 'snn' + '_simulation' + time_str + 'log.ini'
+    cmd = 'mkdir' + ' ' + time_str + 'log/'
+    os.system(cmd)
+    cmd = time_str + 'log/'
+    os.chdir(cmd)
     sf = open(filename,'w+')
     sf.write('learning sample:\n')
     for i in range(dataset.shape[0]):
@@ -122,16 +128,18 @@ def write_system_log(dataset,teacherset,testset,answer):
         sf.write('\n')
     sf.close()
 
-def draw_line_chart(oect_list):
+def draw_line_chart(oect_list,list_len):
     color_list = ['r','y','g','c','b','m','k','teal','skyblue']
     for i in range(3):
         for j in range(9):
             globals()['g_list'+str(j)+str(i)] = list()
             for x in range(len(oect_list)):
                 globals()['g_list'+str(j)+str(i)].append(oect_list[x][j][i])
-            plt.plot([j for j in range(11)],globals()['g_list'+str(j)+str(i)],color_list[j],label='weight'+str(j)+str(str(i)))
+            # The initialized data is also recorded, so the length should be +1 
+            plt.plot([j for j in range(list_len+1)],globals()['g_list'+str(j)+str(i)],color_list[j],label='weight'+str(j)+str(str(i)))
             plt.legend(loc="upper right")
-        plt.savefig('/home/chenxi/Documents/python_task/sim_for_oect/weight_visual/weight-column'+str(str(i))+'.png')
+        # /home/chenxi/Documents/python_task/sim_for_oect/weight_visual/
+        plt.savefig('weight-column'+str(i)+'.png')
         plt.clf()
 
 def weight_visualize(conductance, padding_len, gif_fps, gif_name_suffix=''):
@@ -152,8 +160,8 @@ def weight_visualize(conductance, padding_len, gif_fps, gif_name_suffix=''):
         dataset.append(padding)
 
     normed_dataset = dataset / max([c.max() for c in dataset]) * 255
-
-    write_gif(normed_dataset, 'weight_visual/' + gif_name_suffix + '.gif', fps=gif_fps)
+    # weight_visual/
+    write_gif(normed_dataset, '' + gif_name_suffix + '.gif', fps=gif_fps)
 
 def update_weight_to_show(oect_numpy):
     for i in range(3):
@@ -213,7 +221,7 @@ def stdp(in_signal,teacher):
         for i in range(3):
             result[i] += sum(globals()["v" + str(x)])*g_oect['g'+str(x)+str(i)]*delta_t
         #add post signal,the total time length is 0.1s
-        v_axon[x] = Axon(globals()["v" + str(x)].index(0),globals()["v" + str(x)].index(0)+0.1*reciprocal_dt)
+        v_axon[x] = Axon(globals()["v" + str(x)].index(0),globals()["v" + str(x)].index(0)+learning_rate*reciprocal_dt)
     #the time of when to add set/reset signal
     t_tran = int(max(in_signal)*reciprocal_dt+0.5)
     #compare teach signal,and add set or reset signal
@@ -291,9 +299,9 @@ def snn_learn(dataset,teacherset):
         stdp(dataset[i].tolist(),teacherset[i].tolist())
         update_weight_to_show(oect_numpy)
         oect_list.append(copy.deepcopy(oect_numpy))
-    # weight_visualize(oect_list,2,1,gif_name_suffix='oect_weight_changes')
-    # draw_line_chart(oect_list)
-    print(oect_list)
+    weight_visualize(oect_list,2,1,gif_name_suffix='oect_weight_changes')
+    draw_line_chart(oect_list,list_len=dataset.shape[0])
+    # print(oect_list)
     return 1
 
 def check_result(input_signal,test_result):
@@ -333,11 +341,12 @@ def snn_get(testset,answer):
     print('error rate:',dec.Decimal(error/testset.shape[0]).quantize(dec.Decimal("0.01"),rounding="ROUND_HALF_UP"))
 
 if __name__ == '__main__':
+    os.chdir(os.path.dirname(__file__)) 
     dataset = data_set()
     (dataset,teacherset,testset,answer) = dataset.get_noise_dataset(type='str',setnum=50,testnum=20,mode=0)
     # print(dataset)
     # print(teacherset)
-    # write_system_log(dataset,teacherset,testset,answer)
+    write_system_log(dataset,teacherset,testset,answer)
     snn_learn(dataset,teacherset)
     snn_get(testset,answer)
     # snn_learn_test()
