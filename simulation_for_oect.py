@@ -26,15 +26,20 @@ g_initial = 50 #assume the range of variation is [0-100]
 learning_rate = 0.1
 noise = 0.1
 
-def draw_sample(sample1,sample2,sample3):
+def draw_sample(sample1, sample2, sample3):
     plt.clf()
-    fig = plt.figure()
-    ax1 = fig.add_subplot(221)
-    ax1.imshow(sample1,cmap=plt.cm.gray_r)
-    ax2 = fig.add_subplot(222)
-    ax2.imshow(sample2,cmap=plt.cm.gray_r)
-    ax3 = fig.add_subplot(223)
-    ax3.imshow(sample3,cmap=plt.cm.gray_r)
+    fig = plt.figure(figsize=(10, 4))
+    ax1 = fig.add_subplot(131)
+    ax1.imshow(sample1, vmin = 0, vmax = 1, cmap=plt.cm.gray_r)
+    ax1.set_axis_off()
+
+    ax2 = fig.add_subplot(132)
+    ax2.imshow(sample2,vmin = 0, vmax = 1, cmap=plt.cm.gray_r)
+    ax2.set_axis_off()
+
+    ax3 = fig.add_subplot(133)
+    ax3.imshow(sample3, vmin = 0, vmax = 1, cmap=plt.cm.gray_r)
+    ax3.set_axis_off()
     plt.savefig('sample.png')
     return 0
 
@@ -44,6 +49,11 @@ def draw_accuracy(accuracy_list):
     plt.savefig('accuracy.png')
 
 def write_system_log(dataset,teacherset,testset,answer):
+
+    '''
+    # How about using np.savez?
+    '''
+
     time_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     filename = 'snn' + '_simulation' + time_str + 'log.ini'
     cmd = 'mkdir' + ' ' + time_str + 'log/'
@@ -165,10 +175,22 @@ class data_set:
         answer = np.zeros((testnum,3))
         # Mandatory uniform mixing of training data sets 
         a = [0,1,2]
+
+        '''
+        # How about something like this
+        raw_patterns = np.array([input_signal0, input_signal2, input_signal2])
+        i_train = np.array([0, 1, 2])
+        i_train = np.repeat(i_train, self.setnum)
+        i_train = np.shuffle(i_train)
+        raw_dataset = raw_patterns[i_train]
+        noise = np.abs(np.random.randn(dataset.shape))
+        dataset = raw_dataset + noise
+        '''
+
         for i in range(setnum):
             random.shuffle(a)
             for j in a:
-                for x in range(len(input_signal0)): 
+                for x in range(len(input_signal0)):                     
                     if not mode:
                         dataset[i*3+a.index(j)][x] = (input_signal0,input_signal1,input_signal2)[j][x] + abs(random.gauss(0,noise))
                         dataset[i*3+a.index(j)][x] = dec.Decimal(dataset[i*3+a.index(j)][x]).quantize(dec.Decimal("0.01"),rounding="ROUND_HALF_UP")
@@ -208,7 +230,7 @@ def Axon(t_begin,t_end,v_gate=0.5):
     #v_function = v_gate * exp(-t)
     #ended at v_function < v_threshold
     #t_off = use v_gate and exp(-x) to cal
-    t_off = -math.exp(v_threshold/v_gate)
+    t_off = math.exp(v_threshold/v_gate)  # t_off (conductance decay shall be pos?)
     t = [float(dec.Decimal(i).quantize(dec.Decimal("0.01"),rounding="ROUND_HALF_UP")) for i in np.arange(t_end,t_end + t_off,delta_t).tolist()]
     #print(t_begin,t_end)
     v_axon = int(t_begin+0.5)*[0] + int((t_end - t_begin)+0.5)*[v_gate] + [v_gate*math.exp(-x) for x in t]#v_gate*exp(-x) part
@@ -248,6 +270,9 @@ def stdp(in_signal,teacher):
     #the time of when to add set/reset signal
     t_tran = int(max(in_signal)*reciprocal_dt+0.5)
     #compare teach signal,and add set or reset signal
+
+    # Unlikely to have two neurons of the same integration?
+
     if result.count(max(result)) != 1:
         #now we only have three output
         #change the conductivity of oect
@@ -347,12 +372,16 @@ def snn_learn_test():
         oect_list.append(copy.deepcopy(oect_numpy))
 
 def snn_learn(dataset,teacherset,testset,answer):
-    if 9 != dataset.shape[1] or 3 != teacherset.shape[1]:
-        print("wrong input of snn_learn, input length error")
-        return 0
+
+    assert dataset.shape == (300, 9)
+
+    #if 9 != dataset.shape[1] or 3 != teacherset.shape[1]:
+    #    print("wrong input of snn_learn, input length error")
+    #    return 0
+    
     global g_oect
     accuarcy_list = list()
-    #initial the g_list
+    #initial the g_list     what's the use of g_oect this dict?
     #initial the g for each oect
     for i in range(3*9):
         g_oect["g" + str(i//3) + str(i%3)] = g_initial + random.gauss(0,0.1)
@@ -376,7 +405,7 @@ if __name__ == '__main__':
     # os.chdir(os.path.dirname(__file__)) 
     dataset = data_set()
     (dataset,teacherset,testset,answer) = dataset.get_noise_dataset(type='str',setnum=100,testnum=50,mode=0)
-    write_system_log(dataset,teacherset,testset,answer)
+    #write_system_log(dataset,teacherset,testset,answer)
     draw_sample(dataset[0].reshape(3,3),dataset[1].reshape(3,3),dataset[2].reshape(3,3))
     print(dataset[0],dataset[1],dataset[2])
     snn_learn(dataset,teacherset,testset,answer)
