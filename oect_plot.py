@@ -25,17 +25,28 @@ def draw_accuracy(accuracy_list):
     plt.ylabel('error rate')
     plt.savefig('accuracy.png')
 
-def write_system_log(dataset,teacherset,testset,answer):
+def set_working_path():
+    os.chdir(os.path.dirname(__file__))
     time_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = 'snn' + '_simulation' + time_str + 'log.ini'
     cmd = 'mkdir' + ' ' + time_str + 'log/'
     os.system(cmd)
     cmd = time_str + 'log/'
+    os.system('cp trainingset.npy teacherset.npy testset.npy answer.npy'+ ' ' + cmd)
     os.chdir(cmd)
+
+def write_accuracy_log(error_rate):
+    sf = open('Accuracy.log','a+')
+    sf.write(str(error_rate) + '%')
+    sf.write('\n')
+    sf.close()
+
+def write_system_log(trainingset,teacherset,testset,answer):
+    time_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = 'snn' + '_simulation' + time_str + 'log.ini'
     sf = open(filename,'w+')
     sf.write('learning sample:\n')
-    for i in range(dataset.shape[0]):
-        sf.write(str(dataset[i]))
+    for i in range(trainingset.shape[0]):
+        sf.write(str(trainingset[i]))
         sf.write('\n')
         sf.write(str(teacherset[i]))
         sf.write('\n')

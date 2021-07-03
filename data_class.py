@@ -58,7 +58,7 @@ class data_set:
         else:
             print("wrong parameter,woring type input")
             return 0
-        dataset = np.zeros((self.setnum*3,9))
+        trainingset = np.zeros((self.setnum*3,9))
         teacherset = np.zeros((self.setnum*3,3))
         testset = np.zeros((testnum,9))
         answer = np.zeros((testnum,3))
@@ -69,11 +69,11 @@ class data_set:
             for j in a:
                 for x in range(len(input_signal0)): 
                     if not mode:
-                        dataset[i*3+a.index(j)][x] = (input_signal0,input_signal1,input_signal2)[j][x] + abs(random.gauss(0,self.noise))
-                        dataset[i*3+a.index(j)][x] = dec.Decimal(dataset[i*3+a.index(j)][x]).quantize(dec.Decimal("0.01"),rounding="ROUND_HALF_UP")
+                        trainingset[i*3+a.index(j)][x] = (input_signal0,input_signal1,input_signal2)[j][x] + abs(random.gauss(0,self.noise))
+                        trainingset[i*3+a.index(j)][x] = dec.Decimal(trainingset[i*3+a.index(j)][x]).quantize(dec.Decimal("0.01"),rounding="ROUND_HALF_UP")
                     elif (input_signal0,input_signal1,input_signal2)[j][x]:
-                        dataset[i*3+a.index(j)][x] = (input_signal0,input_signal1,input_signal2)[j][x] + abs(random.gauss(0,self.noise))
-                        dataset[i*3+a.index(j)][x] = dec.Decimal(dataset[i*3+a.index(j)][x]).quantize(dec.Decimal("0.01"),rounding="ROUND_HALF_UP")
+                        trainingset[i*3+a.index(j)][x] = (input_signal0,input_signal1,input_signal2)[j][x] + abs(random.gauss(0,self.noise))
+                        trainingset[i*3+a.index(j)][x] = dec.Decimal(trainingset[i*3+a.index(j)][x]).quantize(dec.Decimal("0.01"),rounding="ROUND_HALF_UP")
                 for x in range(len(teacher0)):
                     teacherset[i*3+a.index(j)][x] = (teacher0,teacher1,teacher2)[j][x]
         # create testset and answer
@@ -88,7 +88,7 @@ class data_set:
                     testset[i][j] = dec.Decimal(testset[i][j]).quantize(dec.Decimal("0.01"),rounding="ROUND_HALF_UP")
             for j in range(len(teacher0)):
                 answer[i][j] = (teacher0,teacher1,teacher2)[k][j]
-        return (dataset,teacherset,testset,answer)
+        return (trainingset,teacherset,testset,answer)
 
 class STDP_DATA:
     def __init__(self, g_initial, v_input = 0.5, learning_rate = 0.1, g_size = [9,3], dynamic_rate = 'NO'):
