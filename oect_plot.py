@@ -31,7 +31,7 @@ def set_working_path():
     cmd = 'mkdir' + ' ' + time_str + 'log/'
     os.system(cmd)
     cmd = time_str + 'log/'
-    os.system('cp trainingset.npy teacherset.npy testset.npy answer.npy'+ ' ' + cmd)
+    os.system('cp dataset.npz'+ ' ' + cmd)
     os.chdir(cmd)
 
 def write_accuracy_log(error_rate):
