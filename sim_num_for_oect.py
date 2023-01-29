@@ -11,7 +11,7 @@ import os
 # copyright:hku eee In-memory computing group
 # author:chenxi
 # date:2021/4/13
-# last modified data:2021/11/16
+# last modified data:2022/6/15
 # this script is suitable for python3.8 or above
 # the input signal unit is 100ms 
 # usage:pyhon simulation_for_oect.py mnist/emnist/default create/load(only take effect when the previous item is the default)

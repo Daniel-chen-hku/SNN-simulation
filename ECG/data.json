@@ -1,0 +1,106 @@
+{
+  "@type": "Dataset",
+  "identifier": "10.1038/s41597-020-0495-6",
+  "title": "Metadata record for: PTB-XL, a large publicly available Electrocardiography Dataset",
+  "relatedPublications": [],
+  "repositories": [
+    {
+      "name": "PhysioNet",
+      "value": "https://doi.org/10.13026/6sec-a640",
+      "@type": "DataCatalog"
+    }
+  ],
+  "assays": [
+    {
+      "measurementType": {
+        "annotationValue": "electrocardiography",
+        "termAccession": "http://www.ebi.ac.uk/efo/EFO_0004327",
+        "termSource": "EFO",
+        "@type": "PropertyValue"
+      },
+      "technologyType": {
+        "annotationValue": "12 lead electrocardiography",
+        "termAccession": "http://purl.obolibrary.org/obo/MMO_0000041",
+        "termSource": "MMO",
+        "@type": "PropertyValue"
+      },
+      "@type": "variableMeasured"
+    },
+    {
+      "measurementType": {
+        "annotationValue": "cardiovascular system",
+        "termAccession": "http://purl.obolibrary.org/obo/UBERON_0004535",
+        "termSource": "EFO",
+        "@type": "PropertyValue"
+      },
+      "technologyType": {
+        "annotationValue": "12 lead electrocardiography",
+        "termAccession": "http://purl.obolibrary.org/obo/MMO_0000041",
+        "termSource": "MMO",
+        "@type": "PropertyValue"
+      },
+      "@type": "variableMeasured"
+    }
+  ],
+  "factors": [
+    {
+      "name": "presence of co-occurring diseases",
+      "type": {
+        "annotationValue": "disease",
+        "termAccession": "http://www.ebi.ac.uk/efo/EFO_0000408",
+        "termSource": "EFO",
+        "@type": "PropertyValue"
+      },
+      "@type": "variableMeasured"
+    }
+  ],
+  "studyCharacteristics": {
+    "organism": [
+      {
+        "annotationValue": "Homo sapiens",
+        "termAccession": "http://purl.bioontology.org/ontology/NCBITAXON/9606",
+        "termSource": "NCBITAXON",
+        "@type": "PropertyValue"
+      }
+    ],
+    "environmentType": [],
+    "geographicalLocation": [],
+    "@type": "variableMeasured"
+  },
+  "ontologySourceReferences": {
+    "EFO": {
+      "name": "EFO",
+      "description": "Experimental Factor Ontology",
+      "file": "http://data.bioontology.org/ontologies/EFO",
+      "version": "2.105",
+      "@type": "DefinedTermSet"
+    },
+    "MMO": {
+      "name": "MMO",
+      "description": "Measurement Method Ontology",
+      "file": "http://data.bioontology.org/ontologies/MMO",
+      "version": "2.36",
+      "@type": "DefinedTermSet"
+    },
+    "NCBITAXON": {
+      "name": "NCBITAXON",
+      "description": "National Center for Biotechnology Information (NCBI) Organismal Classification",
+      "file": "http://data.bioontology.org/ontologies/NCBITAXON",
+      "version": "2019AB",
+      "@type": "DefinedTermSet"
+    },
+    "@type": "CategoryCodeSet"
+  },
+  "comments": [
+    {
+      "name": "Created With Configuration",
+      "value": "1.0",
+      "@type": "SoftwareApplication"
+    },
+    {
+      "name": "Data Descriptor License",
+      "value": "CC-BY-4.0",
+      "@type": "CreativeWork"
+    }
+  ]
+}

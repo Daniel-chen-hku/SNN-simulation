@@ -2,8 +2,13 @@
 from array2gif import write_gif
 import matplotlib.pyplot as plt
 import numpy as np
-import datetime
-import os
+
+def plot_confusion_matrix(matrix):
+    plt.clf()
+    plt.imshow(matrix)
+    plt.colorbar()
+    plt.savefig('confusion_matrix.png')
+    pass
 
 def draw_sample(sample1,sample2,sample3):
     plt.clf()
@@ -25,37 +30,10 @@ def draw_accuracy(accuracy_list):
     plt.ylabel('error rate')
     plt.savefig('accuracy.png')
 
-def set_working_path():
-    os.chdir(os.path.dirname(__file__))
-    time_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    cmd = 'mkdir' + ' ' + time_str + 'log/'
-    os.system(cmd)
-    cmd = time_str + 'log/'
-    os.system('cp dataset.npz'+ ' ' + cmd)
-    os.chdir(cmd)
-
 def write_accuracy_log(error_rate):
     sf = open('Accuracy.log','a+')
     sf.write(str(error_rate) + '%')
     sf.write('\n')
-    sf.close()
-
-def write_system_log(trainingset,teacherset,testset,answer):
-    time_str = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = 'snn' + '_simulation' + time_str + 'log.ini'
-    sf = open(filename,'w+')
-    sf.write('learning sample:\n')
-    for i in range(trainingset.shape[0]):
-        sf.write(str(trainingset[i]))
-        sf.write('\n')
-        sf.write(str(teacherset[i]))
-        sf.write('\n')
-    sf.write('testing sample:\n')
-    for i in range(testset.shape[0]):
-        sf.write(str(testset[i]))
-        sf.write('\n')
-        sf.write(str(answer[i]))
-        sf.write('\n')
     sf.close()
 
 def draw_line_chart(oect_list,list_len):
@@ -96,3 +74,41 @@ def weight_visualize(conductance, padding_len, gif_fps, gif_name_suffix=''):
     # weight_visual/
     write_gif(normed_dataset, '' + gif_name_suffix + '.gif', fps=gif_fps)
 
+def write_weight(oect_list):
+    filename = 'oect_weight'
+    sf = open(filename,'w+')
+    for i in range(len(oect_list)):
+        sf.write(str(oect_list[i]))
+        sf.write('\n')
+    sf.close()
+    return
+
+def plot_weight(oect_list):
+    vmin = np.min(oect_list)
+    vmax = np.max(oect_list)
+    fig,ax = plt.subplots(1,len(oect_list),figsize=(12,24))
+    for i in range(len(oect_list)):
+        ax[i].matshow(oect_list[i], vmin=vmin, vmax=vmax, cmap='jet')
+        ax[i].set_title('ep:'+str(i*5)+'k') # the first value is g initial
+    fig.tight_layout()
+    fig.savefig('weight_change.pdf')
+    plt.clf()
+    plt.cla()
+    plt.close()
+    return
+
+def shape_plot_weight(oect_list):
+    vmin = np.min(oect_list)
+    vmax = np.max(oect_list)
+    for i in range(len(oect_list)):
+        fig,ax = plt.subplots(1,oect_list[0].shape[1],figsize=(72,6))
+        for j in range(oect_list[0].shape[1]):
+            mat = oect_list[i][:,j].reshape((28,28))
+            ax[j].matshow(mat, vmin=vmin, vmax=vmax, cmap='jet')
+            ax[j].set_title('column'+str(j)) # the first value is g initial
+        fig.tight_layout()
+        fig.savefig('weight_epoch' + str(i*5) + '.pdf')
+        plt.clf()
+        plt.cla()
+        plt.close()
+    return
